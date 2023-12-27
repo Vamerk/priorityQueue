@@ -36,10 +36,24 @@ public:
     void ChangePriority(const T& item, int newPriority) {
         auto it = std::find_if(list.begin(), list.end(), [&](const Triple& task) {
             return task.item == item;
-            });
+        });
 
         if (it != list.end()) {
             it->priority = newPriority;
+            std::make_heap(list.begin(), list.end());
+        }
+        else {
+            std::cerr << "Задача не найдена." << std::endl;
+        }
+    }
+
+    void RemoveTask(const T& item) {
+        auto it = std::find_if(list.begin(), list.end(), [&](const Triple& task) {
+            return task.item == item;
+            });
+
+        if (it != list.end()) {
+            list.erase(it);
             std::make_heap(list.begin(), list.end());
         }
         else {
@@ -101,14 +115,16 @@ int main() {
         std::cout << "Выберите действие:" << std::endl;
         std::cout << "1. Обработать заявки" << std::endl;
         std::cout << "2. Добавить заявку" << std::endl;
-        std::cout << "3. Вывести содержимое очередей" << std::endl;
-        std::cout << "4. Выход" << std::endl;
+        std::cout << "3. Изменить приоритет задачи" << std::endl;
+        std::cout << "4. Удалить заявку" << std::endl;
+        std::cout << "5. Вывести содержимое очередей" << std::endl;
+        std::cout << "6. Выход" << std::endl;
         std::cout << "Ваш выбор: ";
         std::cin >> choice;
 
+
         switch (choice) {
         case 1: {
-            // Обработка заявок
             while (priorityQueue.Count() > 0) {
                 auto task = priorityQueue.Dequeue();
                 std::cout << "Обработана задача: " << task.item << ", Приоритет: " << task.priority << ", Время выполнения: " << task.executionTime << std::endl;
@@ -116,7 +132,6 @@ int main() {
             break;
         }
         case 2: {
-            // Добавление заявки
             std::string task;
             int priority, executionTime;
             std::cout << "Введите задачу: ";
@@ -129,11 +144,27 @@ int main() {
             break;
         }
         case 3: {
-            // Вывод содержимого очередей
-            priorityQueue.PrintQueue();
+            std::string task;
+            int newPriority;
+            std::cout << "Введите задачу, для которой нужно изменить приоритет: ";
+            std::cin >> task;
+            std::cout << "Введите новый приоритет: ";
+            std::cin >> newPriority;
+            priorityQueue.ChangePriority(task, newPriority);
             break;
         }
         case 4: {
+            std::string task;
+            std::cout << "Введите задачу, которую нужно удалить: ";
+            std::cin >> task;
+            priorityQueue.RemoveTask(task);
+            break;
+        }
+        case 5: {
+            priorityQueue.PrintQueue();
+            break;
+        }
+        case 6: {
             std::cout << "Программа завершена." << std::endl;
             break;
         }
@@ -141,7 +172,7 @@ int main() {
             std::cout << "Некорректный ввод. Попробуйте еще раз." << std::endl;
         }
         }
-    } while (choice != 4);
+    } while (choice != 6);
 
     return 0;
 }
